@@ -1,0 +1,13 @@
+Setup bridge ethernet network connection using nmcli
+====================================================
+
+And switch to the bridge, without loosing the connectivity.
+
+Can be used like:
+
+- name: setup bridge for ethernet
+  import_role: <this-role>
+  vars:
+    bridge: br0
+    eth_connection: enp63s0
+  tags: [networking]
