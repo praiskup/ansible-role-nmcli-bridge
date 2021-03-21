@@ -1,0 +1,26 @@
+- name: detect bridge exists
+  shell: "ip link show {{ bridge }}"
+  register: detect_bridge
+  changed_when: "detect_bridge.rc != 0"
+  failed_when: False
+
+- name: detect IP address of the connection
+  shell: "ip addr show {{ eth_connection }} | grep 'inet ' | awk '{print $2}'"
+  register: ip_address
+  changed_when: false
+
+- set_fact: ip_address="{{ ip_address.stdout }}"
+- debug: var=ip_address
+
+- name: define the bridge
+  shell: |
+      nmcli con add type bridge       ifname "{{ bridge }}"         con-name "{{ bridge }}"
+      nmcli con add type bridge-slave ifname "{{ eth_connection }}" con-name "{{ bridge }}-{{ eth_connection}}-slave" master "{{ bridge }}"
+      nmcli con modify "{{ bridge }}" bridge.stp no
+  when: "detect_bridge.rc != 0"
+
+- name: switch the connection to bridge
+  shell: |
+      nmcli conn down "{{ eth_connection }}"
+      nmcli conn up   "{{ bridge }}"
+  when: "detect_bridge.rc != 0"

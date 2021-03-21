@@ -1,0 +1,7 @@
+---
+nmcli_bridge:
+    # When set to false, the role doesn't complain when the ethernet connection
+    # is missing, so we can not actually create a bridge for this.  This is
+    # useful on laptops that have the eternet connection available only through
+    # the docking station.
+    fail_for_missing_eth_connection: true
